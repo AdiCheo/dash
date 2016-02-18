@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<!--
+  Example shows drawing strings on a canvas element and
+  dragging individual strings around with the mouse.
+
+  When the canvas reacts to the mouse down event
+  other event handlers will be added to the DOM
+  to handle the mouse move and mouse release
+  
+  Notice in this source file there are no pre-attached
+  event handlers. They will be added using jQuery in the
+  supporting javascript app file.
+-->
+<html>
+  <head>
+     <title>Canvas App</title>
+     <meta content="authenticity_token" name="csrf-param" />
+     <script src="jquery-1.11.3.js"></script>
+     <style>
+         body {
+            background: #dddddd;
+         }
+         #canvas1 {
+            margin: 20px;
+            /*important here for padding to be 0 for mouse calculations */
+            padding: 0px;
+            background: #ffffff;
+            border: thin inset #aaaaaa;
+         }
+     </style>
+  </head>
+
+  <body>
+    <canvas id='canvas1' width='600' height='300'>
+      Canvas not supported
+    </canvas>
+    <script src='canvasApp.js'></script>
+  </body>
+</html>
