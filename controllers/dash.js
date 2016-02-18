@@ -40,8 +40,10 @@ exports.index = function(req, res, next) {
       clientSecret: process.env.ASANA_SECRET,
       redirectUri: '/auth/asana/callback'
   });
-  // var token = _.find(req.user.tokens, { kind: 'asana' });
-  var token = req.cookies.token;
+  var token = _.find(req.user.tokens, { kind: 'asana' }).accessToken;
+  console.log("user  token " + token);
+  // var token = req.cookies.token;
+  // console.log("cookietoken " + token);
   asana_client.useOauth({ credentials: token });
   
   var links = [];
@@ -94,8 +96,8 @@ exports.index = function(req, res, next) {
           var workspaceId = user.workspaces[3].id;
           // var workspaceId = "9326536612333"; //example
           // var workspaceId = "91311471379643";
-          console.log(userId);
-          console.log(workspaceId);
+          // console.log(userId);
+          // console.log(workspaceId);
           return asana_client.tasks.findAll({
             assignee: userId,
             workspace: workspaceId,
@@ -107,7 +109,7 @@ exports.index = function(req, res, next) {
           // There may be more pages of data, we could stream or return a promise
           // to request those here - for now, let's just return the first page
           // of items.
-          console.log(response.data);
+          // console.log(response.data);
           return response.data;
         })
         // .filter(function(task) {
@@ -122,8 +124,8 @@ exports.index = function(req, res, next) {
         // })
         .then(function(list) {
           for (var i = 0; i < list.length; i++) {
-            data.links.push(list[i].name);
-            data.dates.push(list[i].due_on);
+            links.push(list[i].name);
+            dates.push(list[i].due_on);
           }
           done(null, links, dates);
       });
@@ -134,7 +136,7 @@ exports.index = function(req, res, next) {
       });
     },
     getTwitter: function(done) {
-      T.get('search/tweets', { q: 'happy since:2013-01-01', geocode: '40.71448,-74.00598,5mi', count: 10 }, function(err, reply) {
+      T.get('search/tweets', { q: 'happy since:2013-01-01', geocode: '40.71448,-74.00598,5mi', count: 4 }, function(err, reply) {
         done(err, reply);
       });
     },
@@ -155,21 +157,21 @@ exports.index = function(req, res, next) {
     }
     res.render('dash', {
       title: 'Dashboard',
-      data: data
-      // links: links,
-      // dates: dates,
+      // data: data
+      links: links,
+      dates: dates,
       
-      // me: results.getMe,
-      // friends: results.getMyFriends,
+      me: results.getMe,
+      friends: results.getMyFriends,
       
-      // profile: results.getLinkedIn,
+      profile: results.getLinkedIn,
       
-      // tweets: results.getTwitter.statuses,
+      tweets: results.getTwitter.statuses,
       
-      // usernames: results.searchByUsername
-      // userById: results.searchByUserId,
-      // popularImages: results.popularImages,
-      // myRecentMedia: results.myRecentMedia
+      usernames: results.searchByUsername,
+      userById: results.searchByUserId,
+      popularImages: results.popularImages,
+      myRecentMedia: results.myRecentMedia
     });
   });
 };
