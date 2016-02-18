@@ -169,12 +169,17 @@ function createClient() {
 app.get('/auth/asana', function(req, res, next) {
   var client = createClient();
   // If token is in the cookie, use it to show info.
-  var token = req.cookies.token;
+  // var token = req.cookies.token;
+  var token = _.find(req.user.tokens, { kind: 'asana' });
+  // console.log("user  token " + token);
+  // var token = req.cookies.token;
+  // console.log("cookietoken " + token);
+  // asana_client.useOauth({ credentials: token });
   if (token) {
 
     // Here's where we direct the client to use Oauth with the credentials
     // we have acquired.
-    client.useOauth({ credentials: token });
+    client.useOauth({ credentials: token.accessToken });
     client.users.me().then(function(me) {
       apiController.getAsana(req, res, next);
     }).catch(function(err) {
@@ -194,12 +199,21 @@ app.get('/auth/asana/callback', function(req, res) {
     // Get token. Store it in the cookie and redirect home.
     var client = createClient();
     client.app.accessTokenFromCode(code).then(function(credentials) {
+     
+      var User = require('./models/User');
       // The credentials contain the refresh token as well. If you use it, keep
       // it safe on the server! Here we just use the access token, and store it
       // in the cookie for an hour.
       // Generally, if stored in a cookie it should be secure- and http-only
       // to prevent it from being stolen.
-      res.cookie('token', credentials.access_token, { maxAge: 60 * 60 * 1000 });
+      // res.cookie('token', credentials.access_token, { maxAge: 60 * 60 * 1000 });
+      
+      User.findById(req.user._id, function(err, user) {
+        user.tokens = _.reject(user.tokens, function(token) { return token.kind === 'asana'; });
+        user.save(function(err) { if (err) return next(err); });
+        user.tokens.push({ kind: 'asana', accessToken: credentials.access_token });
+        user.save(function(err) { if (err) return next(err); });
+      });
       // Redirect back home, where we should now have access to Asana data.
       res.redirect('/api/asana');
     });

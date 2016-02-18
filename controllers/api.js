@@ -161,8 +161,11 @@ exports.getAsana = function(req, res, next) {
   }
   var client = createClient();
   // If token is in the cookie, use it to show info.
-  // var token = _.find(req.user.tokens, { kind: 'asana' }).refreshToken;
-  var token = req.cookies.token;
+  var token = _.find(req.user.tokens, { kind: 'asana' }).accessToken;
+  console.log("user tocken " + token);
+  // var token = req.cookies.token;
+  // console.log("cookietoken " + token);
+  client.useOauth({ credentials: token });
   if (token) {
 
     // Here's where we direct the client to use Oauth with the credentials
