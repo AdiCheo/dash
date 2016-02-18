@@ -1,0 +1,30 @@
+if profile
+  .col-sm-6
+    h3.text-primary My LinkedIn Profile
+    .well.well-sm
+      .row
+        .col-sm-12
+          .col-sm-2
+            br
+            img.thumbnail(src='#{profile.pictureUrl}')
+          .col-sm-10
+            h3= profile.formattedName
+            h4= profile.headline
+            span.text-muted #{profile.location.name} | #{profile.industry}
+      br
+      .row
+        .col-sm-12
+          dl.dl-horizontal
+            dt.text-muted Current
+            // for company in profile.positions.values
+            //   if company.isCurrent
+            //     dd
+            //       strong= company.title
+            //       |  at
+            //       strong  #{company.company.name}
+            dt.text-muted Connections
+            dd
+              strong #{profile.numConnections}
+              |  connections
+          .text-center
+            small.text-muted= profile.publicProfileUrl

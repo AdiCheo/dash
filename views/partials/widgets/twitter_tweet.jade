@@ -1,0 +1,12 @@
+.col-sm-6
+  .well
+    h4 Compose new Tweet
+    form(role='form', method='POST')
+      input(type='hidden', name='_csrf', value=_csrf)
+      .form-group
+        input.form-control(type='text', name='tweet', autofocus)
+        p.help-block This new Tweet will be posted on your Twitter profile.
+      button.btn.btn-primary(type='submit')
+        i.fa.fa-twitter
+        |  Tweet
+  

@@ -1,0 +1,21 @@
+if tweets
+
+    .col-sm-6
+      .lead Latest
+        strong  #{tweets.length}
+        |  Tweets containing the term
+        strong  happy
+        |  in NYC within
+        strong  5
+        |  miles radius
+    
+      ul.media-list
+        for tweet in tweets
+          li.media
+            a.pull-left(href='#')
+              - var image = tweet.user.profile_image_url.replace('_normal', '');
+              img.media-object(src='#{image}', style='width: 64px; height: 64px;')
+            .media-body
+              strong.media-heading #{tweet.user.name}
+              span.text-muted  @#{tweet.user.screen_name}
+              p= tweet.text

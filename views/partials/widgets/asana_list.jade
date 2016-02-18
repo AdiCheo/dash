@@ -1,0 +1,19 @@
+if links && dates
+    .col-sm-6
+       h2 
+        a(href="javascript:window.open('http://www.asana.com')") Tasks
+        table.table.table-condensed
+          thead
+            tr
+              th №
+              th Title
+              th Date
+          tbody
+            each link, index in links
+              tr
+                td= index + 1
+                td!= link
+                td!= dates[index]
+            else
+              tr
+                td No Tasks Due!

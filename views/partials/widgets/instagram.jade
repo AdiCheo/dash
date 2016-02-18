@@ -1,0 +1,20 @@
+if usernames
+  .col-sm-6
+    h2 Social
+     p.lead Username Search for
+      strong  adicheo
+    table.table.table-hover.table-bordered
+      thead
+        tr
+          th Picture
+          th Username
+          th Full Name
+          th Bio
+      tbody
+        for user in usernames
+          tr
+            td
+              img(src='#{user.profile_picture}', width='75', height='75')
+            td= user.username
+            td= user.full_name
+            td= user.bio
