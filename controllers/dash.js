@@ -40,45 +40,50 @@ exports.index = function(req, res, next) {
       clientSecret: process.env.ASANA_SECRET,
       redirectUri: '/auth/asana/callback'
   });
-  var token = _.find(req.user.tokens, { kind: 'asana' }).accessToken;
+  var token = _.find(req.user.tokens, { kind: 'asana' });
+  if (token)
+    token = token.accessToken;
   console.log("user  token " + token);
   // var token = req.cookies.token;
   // console.log("cookietoken " + token);
   asana_client.useOauth({ credentials: token });
   
-  var links = [];
-  var dates = [];
   
   
   // IG
   ig = require('instagram-node').instagram();
 
-  var token = _.find(req.user.tokens, { kind: 'instagram' });
-  ig.use({ client_id: process.env.INSTAGRAM_ID, client_secret: process.env.INSTAGRAM_SECRET });
-  ig.use({ access_token: token.accessToken });
+  token = _.find(req.user.tokens, { kind: 'instagram' });
+  if (token) {
+    ig.use({ client_id: process.env.INSTAGRAM_ID, client_secret: process.env.INSTAGRAM_SECRET });
+    ig.use({ access_token: token.accessToken });
+  }
   
   //FB
   graph = require('fbgraph');
 
-  var token = _.find(req.user.tokens, { kind: 'facebook' });
-  graph.setAccessToken(token.accessToken);
+  token = _.find(req.user.tokens, { kind: 'facebook' });
+  if (token)
+    graph.setAccessToken(token.accessToken);
   
   // LinkedIn
   Linkedin = require('node-linkedin')(process.env.LINKEDIN_ID, process.env.LINKEDIN_SECRET, process.env.LINKEDIN_CALLBACK_URL);
 
-  var token = _.find(req.user.tokens, { kind: 'linkedin' });
-  var linkedin = Linkedin.init(token.accessToken);
+  token = _.find(req.user.tokens, { kind: 'linkedin' });
+  if (token)
+    var linkedin = Linkedin.init(token.accessToken);
   
   // Twitter
   Twit = require('twit');
 
-  var token = _.find(req.user.tokens, { kind: 'twitter' });
-  var T = new Twit({
-    consumer_key: process.env.TWITTER_KEY,
-    consumer_secret: process.env.TWITTER_SECRET,
-    access_token: token.accessToken,
-    access_token_secret: token.tokenSecret
-  });
+  token = _.find(req.user.tokens, { kind: 'twitter' });
+  if (token)
+    var T = new Twit({
+      consumer_key: process.env.TWITTER_KEY,
+      consumer_secret: process.env.TWITTER_SECRET,
+      access_token: token.accessToken,
+      access_token_secret: token.tokenSecret
+    });
   
   async.parallel({
     searchByUsername: function(done) {
@@ -112,10 +117,10 @@ exports.index = function(req, res, next) {
           // console.log(response.data);
           return response.data;
         })
-        // .filter(function(task) {
-        //   return task.assignee_status === 'today' ||
-        //     task.assignee_status === 'new';
-        // })
+        .filter(function(task) {
+          return task.assignee_status === 'today' ||
+            task.assignee_status === 'new';
+        })
         // .then(function(list) {
         //   console.log(util.inspect(list, {
         //     colors: true,
@@ -123,12 +128,19 @@ exports.index = function(req, res, next) {
         //   }));
         // })
         .then(function(list) {
+          var links = [];
+          var dates = [];
           for (var i = 0; i < list.length; i++) {
             links.push(list[i].name);
             dates.push(list[i].due_on);
           }
-          done(null, links, dates);
-      });
+          var data = {links: links, dates: dates};
+          done(null, data);
+        })
+        .catch(function(err) {
+          console.log(err);
+          done(err);
+        });
     },
     getMe: function(done) {
       graph.get(req.user.facebook + "?fields=id,name,email,first_name,last_name,gender,link,locale,timezone", function(err, me) {
@@ -158,8 +170,8 @@ exports.index = function(req, res, next) {
     res.render('dash', {
       title: 'Dashboard',
       // data: data
-      links: links,
-      dates: dates,
+      links: results.getAsanaTasks.links,
+      dates: results.getAsanaTasks.dates,
       
       me: results.getMe,
       friends: results.getMyFriends,

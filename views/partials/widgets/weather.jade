@@ -1,0 +1,73 @@
+.col-sm-4
+  section(data-bind='foreach: widgets')
+    .sub-section.sub-section-height-2(data-bind="css: 'sub-section-height-' + height()")
+      .widget(data-bind='widget: true, css:{fillsize:fillSize}')
+        .tw-display
+          .tw-tr
+            h2.section-title.tw-title.tw-td Current
+          .tw-tr
+            .tw-value-wrapper.tw-td
+              .tw-value(style='font-size: 75px; max-width: 254px;') -8.77
+              .tw-unit °C
+          .tw-tr
+            .tw-sparkline.tw-td(style='display: none;')
+      .sub-section-tools
+        ul.board-toolbar
+          // ko if:$parent.widgetCanMoveUp($data)
+          // /ko
+          // ko if:$parent.widgetCanMoveDown($data)
+          li(data-bind='click:$parent.moveWidgetDown')
+            i.icon-chevron-down.icon-white
+          // /ko
+          li(data-bind="pluginEditor: {operation: 'edit', type: 'widget'}")
+            i.icon-wrench.icon-white
+          li(data-bind="pluginEditor: {operation: 'delete', type: 'widget'}")
+            i.icon-trash.icon-white
+    .sub-section.sub-section-height-1(data-bind="css: 'sub-section-height-' + height()")
+      .widget(data-bind='widget: true, css:{fillsize:fillSize}')
+        .tw-display
+          .tw-tr
+            h2.section-title.tw-title.tw-td High
+          .tw-tr
+            .tw-value-wrapper.tw-td
+              .tw-value(style='font-size: 30px; max-width: 257px;') -8.77
+              .tw-unit °F
+          .tw-tr
+            .tw-sparkline.tw-td(style='display: none;')
+      .sub-section-tools
+        ul.board-toolbar
+          // ko if:$parent.widgetCanMoveUp($data)
+          li(data-bind='click:$parent.moveWidgetUp')
+            i.icon-chevron-up.icon-white
+          // /ko
+          // ko if:$parent.widgetCanMoveDown($data)
+          li(data-bind='click:$parent.moveWidgetDown')
+            i.icon-chevron-down.icon-white
+          // /ko
+          li(data-bind="pluginEditor: {operation: 'edit', type: 'widget'}")
+            i.icon-wrench.icon-white
+          li(data-bind="pluginEditor: {operation: 'delete', type: 'widget'}")
+            i.icon-trash.icon-white
+    .sub-section.sub-section-height-1(data-bind="css: 'sub-section-height-' + height()")
+      .widget(data-bind='widget: true, css:{fillsize:fillSize}')
+        .tw-display
+          .tw-tr
+            h2.section-title.tw-title.tw-td Low
+          .tw-tr
+            .tw-value-wrapper.tw-td
+              .tw-value(style='font-size: 30px; max-width: 257px;') -8.77
+              .tw-unit °F
+          .tw-tr
+            .tw-sparkline.tw-td(style='display: none;')
+      .sub-section-tools
+        ul.board-toolbar
+          // ko if:$parent.widgetCanMoveUp($data)
+          li(data-bind='click:$parent.moveWidgetUp')
+            i.icon-chevron-up.icon-white
+          // /ko
+          // ko if:$parent.widgetCanMoveDown($data)
+          // /ko
+          li(data-bind="pluginEditor: {operation: 'edit', type: 'widget'}")
+            i.icon-wrench.icon-white
+          li(data-bind="pluginEditor: {operation: 'delete', type: 'widget'}")
+            i.icon-trash.icon-white
