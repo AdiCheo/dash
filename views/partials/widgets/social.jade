@@ -1,0 +1,30 @@
+if usernames
+  .col-sm-4
+    .well.well-sm
+      h2 Social
+       p.lead Username Search for
+        strong  adicheo
+      table.table.table-hover.table-bordered
+        thead
+          tr
+            th Platform
+            th Picture
+            th Username
+            th Full Name
+            th Bio
+        tbody
+          for user in usernames
+            tr
+              td= instagram
+              td
+                img(src='#{user.profile_picture}', width='75', height='75')
+              td= user.username
+              td= user.full_name
+              td= user.bio
+          // tr
+          //   td= facebook
+          //   td
+          //     img.thumbnail(src='https://graph.facebook.com/#{me.id}/picture?type=large', width='75', height='75')
+          //   td= me.username
+          //   td= me.first_name me.last_name}
+          //   td= user.bio

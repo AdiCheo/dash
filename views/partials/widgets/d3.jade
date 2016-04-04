@@ -3,7 +3,7 @@
     script(src='http://d3js.org/d3.v3.min.js', charset='utf-8')
     script(src='http://dimplejs.org/dist/dimple.v2.1.6.min.js')
     script(type='text/javascript').
-      var svg = dimple.newSvg("#chartContainer", 590, 400);
+      var svg = dimple.newSvg("#chartContainer", 350, 400);
       d3.tsv("../d/data/example_data.tsv", function (data) {
       // Filter the data for a single channel
       data = dimple.filterData(data, "Channel", "Hypermarkets");
