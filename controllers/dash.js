@@ -40,13 +40,13 @@ exports.index = function(req, res, next) {
       clientSecret: process.env.ASANA_SECRET,
       redirectUri: '/auth/asana/callback'
   });
-  var token = _.find(req.user.tokens, { kind: 'asana' });
-  if (token)
-    token = token.accessToken;
-  console.log("user  token " + token);
+  // var token = _.find(req.user.tokens, { kind: 'asana' });
+  // if (token)
+  //   token = token.accessToken;
+  // console.log("user  token " + token);
   // var token = req.cookies.token;
   // console.log("cookietoken " + token);
-  asana_client.useOauth({ credentials: token });
+  // asana_client.useOauth({ credentials: token });
   
   
   
@@ -92,42 +92,43 @@ exports.index = function(req, res, next) {
       });
     },
     getAsanaTasks: function(done) {
-      asana_client.users.me()
-        .then(function(user) {
-          var userId = user.id;
-          // The user's "default" workspace is the first one in the list, though
-          // any user can have multiple workspaces so you can't always assume this
-          // is the one you want to work with.
-          var workspaceId = user.workspaces[3].id;
-          // var workspaceId = "9326536612333"; //example
-          // var workspaceId = "91311471379643";
-          // console.log(userId);
-          // console.log(workspaceId);
-          return asana_client.tasks.findAll({
-            assignee: userId,
-            workspace: workspaceId,
-            completed_since: 'now',
-            opt_fields: 'id,name,assignee_status,completed,due_on'
-          });
-        })
-        .then(function(response) {
-          // There may be more pages of data, we could stream or return a promise
-          // to request those here - for now, let's just return the first page
-          // of items.
-          // console.log(response.data);
-          return response.data;
-        })
-        .filter(function(task) {
-          return task.assignee_status === 'today' ||
-            task.assignee_status === 'new';
-        })
+      // asana_client.users.me()
+        // .then(function(user) {
+        //   var userId = user.id;
+        //   // The user's "default" workspace is the first one in the list, though
+        //   // any user can have multiple workspaces so you can't always assume this
+        //   // is the one you want to work with.
+        //   var workspaceId = user.workspaces[3].id;
+        //   // var workspaceId = "9326536612333"; //example
+        //   // var workspaceId = "91311471379643";
+        //   // console.log(userId);
+        //   // console.log(workspaceId);
+        //   return asana_client.tasks.findAll({
+        //     assignee: userId,
+        //     workspace: workspaceId,
+        //     completed_since: 'now',
+        //     opt_fields: 'id,name,assignee_status,completed,due_on'
+        //   });
+        // })
+        // .then(function(response) {
+        //   // There may be more pages of data, we could stream or return a promise
+        //   // to request those here - for now, let's just return the first page
+        //   // of items.
+        //   // console.log(response.data);
+        //   return response.data;
+        // })
+        // .filter(function(task) {
+        //   return task.assignee_status === 'today' ||
+        //     task.assignee_status === 'new';
+        // })
         // .then(function(list) {
         //   console.log(util.inspect(list, {
         //     colors: true,
         //     depth: null
         //   }));
         // })
-        .then(function(list) {
+        // .then(function(list) {
+          var list = [ { id: 96561128124942, name: 'New Dash API keys for DeDoDi', completed: false, assignee_status: 'upcoming' }, { id: 91233482004776, name: 'LAWS Video', completed: false, assignee_status: 'upcoming' }, { id: 96561128124934, name: 'IdeaPrairie on DeDoDI', completed: false, assignee_status: 'upcoming' }, { id: 96561128124938, name: 'COMP assignment 4', completed: false, assignee_status: 'upcoming' } ];
           var links = [];
           var dates = [];
           for (var i = 0; i < list.length; i++) {
@@ -136,11 +137,11 @@ exports.index = function(req, res, next) {
           }
           var data = {links: links, dates: dates};
           done(null, data);
-        })
-        .catch(function(err) {
-          console.log(err);
-          done(err);
-        });
+        // })
+        // .catch(function(err) {
+        //   console.log(err);
+        //   done(err);
+        // });
     },
     getMe: function(done) {
       graph.get(req.user.facebook + "?fields=id,name,email,first_name,last_name,gender,link,locale,timezone", function(err, me) {
