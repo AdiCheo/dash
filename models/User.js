@@ -76,12 +76,3 @@ userSchema.methods.gravatar = function(size) {
 };
 
 module.exports = mongoose.model('User', userSchema);
-
-
-var Todo = new mongoose.Schema({
-  user_id    : String,
-  content    : String,
-  updated_at : Date
-});
-
-mongoose.model( 'Todo', Todo );
