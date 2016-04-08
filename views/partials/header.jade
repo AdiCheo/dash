@@ -11,22 +11,22 @@
         | Life Dashboard
     .collapse.navbar-collapse
       ul.nav.navbar-nav
-        if user
-          li(class=title=='Dash'?'active':undefined)
-            a(href='/dash') Dash
+        // if user
+        //   li(class=title=='Dash'?'active':undefined)
+        //     a(href='/dash') Dash
         li(class=title=='API Examples'?'active':undefined)
           a(href='/api') API Examples
-        li(class=title=='Contact'?'active':undefined)
-          a(href='/contact') Contact
-        if user
-          li(class=title=='D3'?'active':undefined)
-            a(href='/d') d
-          li(class=title=='Freeboard'?'active':undefined)
-            a(href='/f') f
-          li(class=title=='Razor'?'active':undefined)
-            a(href='/r') r
-          li(class=title=='C'?'active':undefined)
-            a(href='/c') c
+        // li(class=title=='Contact'?'active':undefined)
+        //   a(href='/contact') Contact
+        // if user
+        //   li(class=title=='D3'?'active':undefined)
+        //     a(href='/d') d
+        //   li(class=title=='Freeboard'?'active':undefined)
+        //     a(href='/f') f
+        //   li(class=title=='Razor'?'active':undefined)
+        //     a(href='/r') r
+        //   li(class=title=='C'?'active':undefined)
+        //     a(href='/c') c
       ul.nav.navbar-nav.navbar-right
         if !user
           li(class=title=='Login'?'active':undefined)

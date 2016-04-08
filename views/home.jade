@@ -1,6 +1,10 @@
 extends layout
 
 block content
-  h1 Dash
-  p.lead A Dashboard for your life
-  hr
+  if !user
+    h1 Dash
+    p.lead A Dashboard for your life
+    p Login to customize your Life Dashboard
+    hr
+  else
+    include dash
