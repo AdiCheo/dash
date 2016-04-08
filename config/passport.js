@@ -510,7 +510,14 @@ exports.isAuthenticated = function(req, res, next) {
   if (req.isAuthenticated()) {
     return next();
   }
-  res.redirect('/login');
+  console.log("Authenticating for " + req.path)
+  if (req.path == "/") {
+    res.render('home', {
+      title: 'Dashboard'
+    });
+  } else {
+    res.redirect('/login');
+  }
 };
 
 /**
