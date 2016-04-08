@@ -131,6 +131,7 @@ exports.index = function(req, res, next) {
           var list = [ { id: 96561128124942, name: 'New Dash API keys for DeDoDi', completed: false, assignee_status: 'upcoming' }, { id: 91233482004776, name: 'LAWS Video', completed: false, assignee_status: 'upcoming' }, { id: 96561128124934, name: 'IdeaPrairie on DeDoDI', completed: false, assignee_status: 'upcoming' }, { id: 96561128124938, name: 'COMP assignment 4', completed: false, assignee_status: 'upcoming' } ];
           var links = [];
           var dates = [];
+          console.log(list.length)
           for (var i = 0; i < list.length; i++) {
             links.push(list[i].name);
             dates.push(list[i].due_on);
