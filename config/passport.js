@@ -383,28 +383,6 @@ passport.use(new LinkedInStrategy({
 }));
 
 /**
- * Tumblr API OAuth.
- */
-passport.use('tumblr', new OAuthStrategy({
-    requestTokenURL: 'http://www.tumblr.com/oauth/request_token',
-    accessTokenURL: 'http://www.tumblr.com/oauth/access_token',
-    userAuthorizationURL: 'http://www.tumblr.com/oauth/authorize',
-    consumerKey: process.env.TUMBLR_KEY,
-    consumerSecret: process.env.TUMBLR_SECRET,
-    callbackURL: '/auth/tumblr/callback',
-    passReqToCallback: true
-  },
-  function(req, token, tokenSecret, profile, done) {
-    User.findById(req.user._id, function(err, user) {
-      user.tokens.push({ kind: 'tumblr', accessToken: token, tokenSecret: tokenSecret });
-      user.save(function(err) {
-        done(err, user);
-      });
-    });
-  }
-));
-
-/**
  * Asana API OAuth.
  */
 passport.use('asana', new AsanaStrategy({
@@ -424,84 +402,6 @@ passport.use('asana', new AsanaStrategy({
     });
   }
 ));
-
-/**
- * Foursquare API OAuth.
- */
-passport.use('foursquare', new OAuth2Strategy({
-    authorizationURL: 'https://foursquare.com/oauth2/authorize',
-    tokenURL: 'https://foursquare.com/oauth2/access_token',
-    clientID: process.env.FOURSQUARE_ID,
-    clientSecret: process.env.FOURSQUARE_SECRET,
-    callbackURL: process.env.FOURSQUARE_REDIRECT_URL,
-    passReqToCallback: true
-  },
-  function(req, accessToken, refreshToken, profile, done) {
-    User.findById(req.user._id, function(err, user) {
-      user.tokens.push({ kind: 'foursquare', accessToken: accessToken });
-      user.save(function(err) {
-        done(err, user);
-      });
-    });
-  }
-));
-
-/**
- * Venmo API OAuth.
- */
-passport.use('venmo', new OAuth2Strategy({
-    authorizationURL: 'https://api.venmo.com/v1/oauth/authorize',
-    tokenURL: 'https://api.venmo.com/v1/oauth/access_token',
-    clientID: process.env.VENMO_ID,
-    clientSecret: process.env.VENMO_SECRET,
-    callbackURL: process.env.VENMO_REDIRECT_URL,
-    passReqToCallback: true
-  },
-  function(req, accessToken, refreshToken, profile, done) {
-    User.findById(req.user._id, function(err, user) {
-      user.tokens.push({ kind: 'venmo', accessToken: accessToken });
-      user.save(function(err) {
-        done(err, user);
-      });
-    });
-  }
-));
-
-/**
- * Steam API OpenID.
- */
-passport.use(new OpenIDStrategy({
-  apiKey: process.env.STEAM_KEY,
-  providerURL: 'http://steamcommunity.com/openid',
-  returnURL: 'http://localhost:3000/auth/steam/callback',
-  realm: 'http://localhost:3000/',
-  stateless: true
-}, function(identifier, done) {
-  var steamId = identifier.match(/\d+$/)[0];
-  var profileURL = 'http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=' + process.env.STEAM_KEY + '&steamids=' + steamId;
-
-  User.findOne({ steam: steamId }, function(err, existingUser) {
-    if (existingUser) return done(err, existingUser);
-    request(profileURL, function(error, response, body) {
-      if (!error && response.statusCode == 200) {
-        var data = JSON.parse(body);
-        var profile = data.response.players[0];
-
-        var user = new User();
-        user.steam = steamId;
-        user.email = steamId + '@steam.com'; // steam does not disclose emails, prevent duplicate keys
-        user.tokens.push({ kind: 'steam', accessToken: steamId });
-        user.profile.name = profile.personaname;
-        user.profile.picture = profile.avatarmedium;
-        user.save(function(err) {
-          done(err, user);
-        });
-      } else {
-        done(error, null);
-      }
-    });
-  });
-}));
 
 /**
  * Login Required middleware.
