@@ -11,7 +11,6 @@ var logger = require('morgan');
 var errorHandler = require('errorhandler');
 var lusca = require('lusca');
 var methodOverride = require('method-override');
-var dotenv = require('dotenv');
 var MongoStore = require('connect-mongo/es5')(session);
 var flash = require('express-flash');
 var path = require('path');
@@ -29,35 +28,7 @@ var _ = require('lodash');
  *
  * Default path: .env
  */
- var fs = require('fs');
- var env_file = '.env';
-
-fs.stat(env_file, function(err, stats) { 
-  if(err){
-    //doing what I call "early return" pattern or basically "blacklisting"
-    //we stop errors at this block and prevent further execution of code
-
-    dotenv.load({ path: '.env.example' });
-    //in here, do something like check what error was returned
-    switch(err.code){
-      case 'ENOENT':
-        console.log(env_file + ' does not exist');
-        break;
-    }
-    //of course you should not proceed so you should return
-    return;
-  }
-
-  //back there, we handled the error and blocked execution
-  //beyond this line, we assume there's no error and proceed
-
-  if (stats.isDirectory()) {
-    console.log(env_file + ": is a directory");
-  } else {
-    dotenv.load({ path: '.env' });
-  }
-});
-
+require('dotenv').config();
 
 /**
  * Controllers (route handlers).
