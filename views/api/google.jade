@@ -1,0 +1,26 @@
+extends ../layout
+
+block content
+  .page-header
+    h2
+      i.fa.fa-envelope-o
+      | Google API
+      
+  h4 Gmail Messages
+  table.table.table-striped.table-bordered
+    thead
+      tr
+        th Messages
+    tbody
+      for msg in messages
+        tr
+          td= msg
+  h4 Gmail Labels
+  table.table.table-striped.table-bordered
+    thead
+      tr
+        th Labels
+    tbody
+      for label in labels
+        tr
+          td= label

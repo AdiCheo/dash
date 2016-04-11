@@ -1,5 +1,6 @@
 var _ = require('lodash');
 var passport = require('passport');
+var refresh = require('passport-oauth2-refresh')
 var request = require('request');
 var AsanaStrategy = require('passport-asana').Strategy;
 var InstagramStrategy = require('passport-instagram').Strategy;
@@ -28,7 +29,7 @@ passport.deserializeUser(function(id, done) {
 /**
  * Sign in with Instagram.
  */
-passport.use(new InstagramStrategy({
+var InstStrategy = new InstagramStrategy({
   clientID: process.env.INSTAGRAM_ID,
   clientSecret: process.env.INSTAGRAM_SECRET,
   callbackURL: '/auth/instagram/callback',
@@ -73,12 +74,12 @@ passport.use(new InstagramStrategy({
       });
     });
   }
-}));
+});
 
 /**
  * Sign in using Email and Password.
  */
-passport.use(new LocalStrategy({ usernameField: 'email' }, function(email, password, done) {
+var localStrategy = new LocalStrategy({ usernameField: 'email' }, function(email, password, done) {
   email = email.toLowerCase();
   User.findOne({ email: email }, function(err, user) {
     if (!user) {
@@ -92,7 +93,7 @@ passport.use(new LocalStrategy({ usernameField: 'email' }, function(email, passw
       }
     });
   });
-}));
+});
 
 /**
  * OAuth Strategy Overview
@@ -112,7 +113,7 @@ passport.use(new LocalStrategy({ usernameField: 'email' }, function(email, passw
 /**
  * Sign in with Facebook.
  */
-passport.use(new FacebookStrategy({
+var facebookStrategy = new FacebookStrategy({
   clientID: process.env.FACEBOOK_ID,
   clientSecret: process.env.FACEBOOK_SECRET,
   callbackURL: '/auth/facebook/callback',
@@ -163,12 +164,12 @@ passport.use(new FacebookStrategy({
       });
     });
   }
-}));
+});
 
 /**
  * Sign in with GitHub.
  */
-passport.use(new GitHubStrategy({
+var githubStrategy = new GitHubStrategy({
   clientID: process.env.GITHUB_ID,
   clientSecret: process.env.GITHUB_SECRET,
   callbackURL: '/auth/github/callback',
@@ -219,11 +220,11 @@ passport.use(new GitHubStrategy({
       });
     });
   }
-}));
+});
 
 // Sign in with Twitter.
 
-passport.use(new TwitterStrategy({
+var TwStrategy = new TwitterStrategy({
   consumerKey: process.env.TWITTER_KEY,
   consumerSecret: process.env.TWITTER_SECRET,
   callbackURL: '/auth/twitter/callback',
@@ -269,12 +270,12 @@ passport.use(new TwitterStrategy({
       });
     });
   }
-}));
+});
 
 /**
  * Sign in with Google.
  */
-passport.use(new GoogleStrategy({
+var googleStrategy = new GoogleStrategy({
   clientID: process.env.GOOGLE_ID,
   clientSecret: process.env.GOOGLE_SECRET,
   callbackURL: '/auth/google/callback',
@@ -289,6 +290,7 @@ passport.use(new GoogleStrategy({
         User.findById(req.user.id, function(err, user) {
           user.google = profile.id;
           user.tokens.push({ kind: 'google', accessToken: accessToken });
+          user.tokens.push({ kind: 'google', refreshToken: refreshToken });
           user.profile.name = user.profile.name || profile.displayName;
           user.profile.gender = user.profile.gender || profile._json.gender;
           user.profile.picture = user.profile.picture || profile._json.image.url;
@@ -323,12 +325,12 @@ passport.use(new GoogleStrategy({
       });
     });
   }
-}));
+});
 
 /**
  * Sign in with LinkedIn.
  */
-passport.use(new LinkedInStrategy({
+var LinStrategy = new LinkedInStrategy({
   clientID: process.env.LINKEDIN_ID,
   clientSecret: process.env.LINKEDIN_SECRET,
   callbackURL: process.env.LINKEDIN_CALLBACK_URL,
@@ -380,7 +382,7 @@ passport.use(new LinkedInStrategy({
       });
     });
   }
-}));
+});
 
 /**
  * Tumblr API OAuth.
@@ -470,7 +472,7 @@ passport.use('venmo', new OAuth2Strategy({
 /**
  * Steam API OpenID.
  */
-passport.use(new OpenIDStrategy({
+var openIDStrategy = new OpenIDStrategy({
   apiKey: process.env.STEAM_KEY,
   providerURL: 'http://steamcommunity.com/openid',
   returnURL: 'http://localhost:3000/auth/steam/callback',
@@ -501,7 +503,22 @@ passport.use(new OpenIDStrategy({
       }
     });
   });
-}));
+});
+
+passport.use(facebookStrategy);
+passport.use(InstStrategy);
+passport.use(localStrategy);
+passport.use(googleStrategy);
+passport.use(TwStrategy);
+passport.use(githubStrategy);
+passport.use(LinStrategy);
+passport.use(openIDStrategy);
+
+refresh.use(facebookStrategy);
+refresh.use(InstStrategy);
+refresh.use(googleStrategy);
+refresh.use(githubStrategy);
+refresh.use(LinStrategy);
 
 /**
  * Login Required middleware.
