@@ -314,6 +314,7 @@ exports.getTwitter = function(req, res, next) {
  * Post a tweet.
  */
 exports.postTwitter = function(req, res, next) {
+  Twit = require('twit');
   req.assert('tweet', 'Tweet cannot be empty.').notEmpty();
 
   var errors = req.validationErrors();

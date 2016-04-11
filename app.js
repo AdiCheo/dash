@@ -37,8 +37,6 @@ var homeController = require('./controllers/home');
 var userController = require('./controllers/user');
 var apiController = require('./controllers/api');
 var contactController = require('./controllers/contact');
-var dashController = require('./controllers/dash');
-var cController = require('./controllers/c');
 
 /**
  * API keys and Passport configuration.
@@ -114,6 +112,8 @@ app.use(express.static(path.join(__dirname, 'public'), { maxAge: 31557600000 }))
  * Primary app routes.
  */
 app.get('/', passportConf.isAuthenticated, homeController.index);
+app.post('/', passportConf.isAuthenticated, apiController.postTwitter);
+app.get('/dash', passportConf.isAuthenticated, homeController.index);
 
 app.get('/login', userController.getLogin);
 app.post('/login', userController.postLogin);
@@ -131,21 +131,6 @@ app.post('/account/profile', passportConf.isAuthenticated, userController.postUp
 app.post('/account/password', passportConf.isAuthenticated, userController.postUpdatePassword);
 app.post('/account/delete', passportConf.isAuthenticated, userController.postDeleteAccount);
 app.get('/account/unlink/:provider', passportConf.isAuthenticated, userController.getOauthUnlink);
-/**
- * Dash routes.
- */
-app.get('/dash', passportConf.isAuthenticated, dashController.index);
-app.post('/dash', passportConf.isAuthenticated, apiController.postTwitter);
-
-/**
- * C routes. (Mobile node app example)
- */
-// app.get('/c', cController.index);
-app.post('/pollData', cController.index);
-app.get('/pollData', cController.index);
-app.post('/move', cController.index);
-app.post('/post', cController.index);
-
 var Asana = require('asana');
 
 var clientId = process.env['ASANA_ID'];
