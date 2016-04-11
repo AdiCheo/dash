@@ -32,12 +32,12 @@ exports.getApi = function(req, res) {
  */
 exports.getAsana = function(req, res, next) {
   Asana = require('asana');
-  
+
   var clientId = process.env['ASANA_ID'];
   var clientSecret = process.env['ASANA_SECRET'];
-  
+
   var links = [];
-  
+
   // Create an Asana client. Do this per request since it keeps state that
   // shouldn't be shared across requests.
   function createClient() {
@@ -49,16 +49,22 @@ exports.getAsana = function(req, res, next) {
   }
   var client = createClient();
   // If token is in the cookie, use it to show info.
-  var token = _.find(req.user.tokens, { kind: 'asana' }).accessToken;
+  var token = _.find(req.user.tokens, {
+    kind: 'asana'
+  }).accessToken;
   console.log("user tocken " + token);
   // var token = req.cookies.token;
   // console.log("cookietoken " + token);
-  client.useOauth({ credentials: token });
+  client.useOauth({
+    credentials: token
+  });
   if (token) {
 
     // Here's where we direct the client to use Oauth with the credentials
     // we have acquired.
-    client.useOauth({ credentials: token });
+    client.useOauth({
+      credentials: token
+    });
     client.users.me()
       .then(function(user) {
         var userId = user.id;
@@ -82,97 +88,29 @@ exports.getAsana = function(req, res, next) {
         // of items.
         console.log(response.data);
         return response.data;
-    })
-    .then(function(list) {
-    for (var i = 0; i < list.length; i++) {
-      links.push(list[i].name);
-    }
-    res.render('api/asana', {
-      title: 'Web Asana',
-      links: links
-    });
-  })
-    .catch(function(err) {
-      res.end('Error fetching user: ' + err);
-    });
-  } else {
+      })
+      .then(function(list) {
+        for (var i = 0; i < list.length; i++) {
+          links.push(list[i].name);
+        }
+        if (req.path == "/api/asana") {
+          res.render('api/asana', {
+            title: 'Web Asana',
+            links: links
+          });
+        }
+        else {
+          next(err, links);
+        }
+      })
+      .catch(function(err) {
+        res.end('Error fetching user: ' + err);
+      });
+  }
+  else {
     // Otherwise redirect to authorization.
     res.redirect('/auth/asana');
   }
-
-
-//   // util = require('util');
-//   var client = Asana.Client.create({
-//     clientID: process.env.ASANA_ID,
-//     clientSecret: process.env.ASANA_SECRET,
-//     redirectUrl: '/auth/asana/callback',
-//     redirectUri: '/auth/asana/callback'
-//   });
-//   var credentials = {
-//     // access_token: 'my_access_token',
-//     refresh_token: token.refreshToken
-//   };
-//   // client.useOauth({ credentials: token.accessToken });
-//   client.useOauth({ credentials: credentials });
-  
-//   var links = [];
-//   var dates = [];
-// // Using the API key for basic authentication. This is reasonable to get
-// // started with, but Oauth is more secure and provides more features.
-// // var client = Asana.Client.create().useAccessToken(process.env.ASANA_API_KEY);
-//   console.log(token);
-//   console.log(client.users.me());
-// client.users.me().then(function(me) {
-//       res.end('Hello ' + me.name);
-//     }).catch(function(err) {
-//       res.end('Error fetching user: ' + err);
-//     });
-//   client.users.me()
-//   .then(function(user) {
-//     var userId = user.id;
-//     // The user's "default" workspace is the first one in the list, though
-//     // any user can have multiple workspaces so you can't always assume this
-//     // is the one you want to work with.
-//     var workspaceId = user.workspaces[3].id;
-//     // var workspaceId = "9326536612333";
-//     console.log(userId);
-//     console.log(workspaceId);
-//     return client.tasks.findAll({
-//       assignee: userId,
-//       workspace: workspaceId,
-//       completed_since: 'now',
-//       opt_fields: 'id,name,assignee_status,completed'
-//     });
-//   })
-//   .then(function(response) {
-//     // There may be more pages of data, we could stream or return a promise
-//     // to request those here - for now, let's just return the first page
-//     // of items.
-//     console.log(response.data);
-//     return response.data;
-//   })
-//   // .filter(function(task) {
-//   //   return task.assignee_status === 'today' ||
-//   //     task.assignee_status === 'new';
-//   // })
-//   // .then(function(list) {
-//   //   console.log(util.inspect(list, {
-//   //     colors: true,
-//   //     depth: null
-//   //   }));
-//   // })
-//   .then(function(list) {
-//     for (var i = 0; i < list.length; i++) {
-//       links.push(list[i].name);
-//     }
-//     res.render('api/asana', {
-//       title: 'Web Asana',
-//       links: links
-//     });
-//   })
-//   .catch(function(err) {
-//     res.redirect(client.app.asanaAuthorizeUrl());
-//   });
 };
 
 
@@ -183,30 +121,38 @@ exports.getAsana = function(req, res, next) {
 exports.getFacebook = function(req, res, next) {
   graph = require('fbgraph');
 
-  var token = _.find(req.user.tokens, { kind: 'facebook' });
+  var token = _.find(req.user.tokens, {
+    kind: 'facebook'
+  });
   graph.setAccessToken(token.accessToken);
   async.parallel({
-    getMe: function(done) {
-      graph.get(req.user.facebook + "?fields=id,name,email,first_name,last_name,gender,link,locale,timezone", function(err, me) {
-        done(err, me);
-      });
+      getMe: function(done) {
+        graph.get(req.user.facebook + "?fields=id,name,email,first_name,last_name,gender,link,locale,timezone", function(err, me) {
+          done(err, me);
+        });
+      },
+      getMyFriends: function(done) {
+        graph.get(req.user.facebook + '/friends', function(err, friends) {
+          done(err, friends.data);
+        });
+      }
     },
-    getMyFriends: function(done) {
-      graph.get(req.user.facebook + '/friends', function(err, friends) {
-        done(err, friends.data);
-      });
-    }
-  },
-  function(err, results) {
-    if (err) {
-      return next(err);
-    }
-    res.render('api/facebook', {
-      title: 'Facebook API',
-      me: results.getMe,
-      friends: results.getMyFriends
+    function(err, results) {
+      if (err) {
+        return next(err);
+      }
+
+      if (req.path == "/api/facebook") {
+        res.render('api/facebook', {
+          title: 'Facebook API',
+          me: results.getMe,
+          friends: results.getMyFriends
+        });
+      }
+      else {
+        next(err, results);
+      }
     });
-  });
 };
 
 
@@ -241,8 +187,12 @@ exports.getScraping = function(req, res, next) {
 exports.getGithub = function(req, res, next) {
   Github = require('github-api');
 
-  var token = _.find(req.user.tokens, { kind: 'github' });
-  var github = new Github({ token: token.accessToken });
+  var token = _.find(req.user.tokens, {
+    kind: 'github'
+  });
+  var github = new Github({
+    token: token.accessToken
+  });
   var repo = github.getRepo('sahat', 'requirejs-library');
   repo.show(function(err, repo) {
     if (err) {
@@ -281,7 +231,8 @@ exports.getNewYorkTimes = function(req, res, next) {
         title: 'New York Times API',
         books: bestsellers.results
       });
-    } else {
+    }
+    else {
       next(err, bestsellers.results);
     }
   });
@@ -295,21 +246,32 @@ exports.getNewYorkTimes = function(req, res, next) {
 exports.getTwitter = function(req, res, next) {
   Twit = require('twit');
 
-  var token = _.find(req.user.tokens, { kind: 'twitter' });
+  var token = _.find(req.user.tokens, {
+    kind: 'twitter'
+  });
   var T = new Twit({
     consumer_key: process.env.TWITTER_KEY,
     consumer_secret: process.env.TWITTER_SECRET,
     access_token: token.accessToken,
     access_token_secret: token.tokenSecret
   });
-  T.get('search/tweets', { q: 'nodejs since:2013-01-01', geocode: '40.71448,-74.00598,5mi', count: 10 }, function(err, reply) {
+  T.get('search/tweets', {
+    q: 'nodejs since:2013-01-01',
+    geocode: '40.71448,-74.00598,5mi',
+    count: 10
+  }, function(err, reply) {
     if (err) {
       return next(err);
     }
-    res.render('api/twitter', {
-      title: 'Twitter API',
-      tweets: reply.statuses
-    });
+    if (req.path == "/api/twitter") {
+      res.render('/api/twitter', {
+        title: 'Twitter API',
+        tweets: reply.statuses
+      });
+    }
+    else {
+      next(err, reply);
+    }
   });
 };
 
@@ -328,18 +290,24 @@ exports.postTwitter = function(req, res, next) {
     return res.redirect('/api/twitter');
   }
 
-  var token = _.find(req.user.tokens, { kind: 'twitter' });
+  var token = _.find(req.user.tokens, {
+    kind: 'twitter'
+  });
   var T = new Twit({
     consumer_key: process.env.TWITTER_KEY,
     consumer_secret: process.env.TWITTER_SECRET,
     access_token: token.accessToken,
     access_token_secret: token.tokenSecret
   });
-  T.post('statuses/update', { status: req.body.tweet }, function(err, data, response) {
+  T.post('statuses/update', {
+    status: req.body.tweet
+  }, function(err, data, response) {
     if (err) {
       return next(err);
     }
-    req.flash('success', { msg: 'Tweet has been posted.'});
+    req.flash('success', {
+      msg: 'Tweet has been posted.'
+    });
     res.redirect('/api/twitter');
   });
 };
@@ -351,16 +319,23 @@ exports.postTwitter = function(req, res, next) {
 exports.getLinkedin = function(req, res, next) {
   Linkedin = require('node-linkedin')(process.env.LINKEDIN_ID, process.env.LINKEDIN_SECRET, process.env.LINKEDIN_CALLBACK_URL);
 
-  var token = _.find(req.user.tokens, { kind: 'linkedin' });
+  var token = _.find(req.user.tokens, {
+    kind: 'linkedin'
+  });
   var linkedin = Linkedin.init(token.accessToken);
   linkedin.people.me(function(err, $in) {
     if (err) {
       return next(err);
     }
-    res.render('api/linkedin', {
-      title: 'LinkedIn API',
-      profile: $in
-    });
+    if (req.path == "/api/linkedin") {
+      res.render('api/linkedin', {
+        title: 'LinkedIn API',
+        profile: $in
+      });
+    }
+    else {
+      next(err, $in);
+    }
   });
 };
 
@@ -371,9 +346,16 @@ exports.getLinkedin = function(req, res, next) {
 exports.getInstagram = function(req, res, next) {
   ig = require('instagram-node').instagram();
 
-  var token = _.find(req.user.tokens, { kind: 'instagram' });
-  ig.use({ client_id: process.env.INSTAGRAM_ID, client_secret: process.env.INSTAGRAM_SECRET });
-  ig.use({ access_token: token.accessToken });
+  var token = _.find(req.user.tokens, {
+    kind: 'instagram'
+  });
+  ig.use({
+    client_id: process.env.INSTAGRAM_ID,
+    client_secret: process.env.INSTAGRAM_SECRET
+  });
+  ig.use({
+    access_token: token.accessToken
+  });
   async.parallel({
     searchByUsername: function(done) {
       ig.user_search('adicheo', function(err, users, limit) {
@@ -384,11 +366,11 @@ exports.getInstagram = function(req, res, next) {
       ig.user('173801854', function(err, user) {
         done(err, user);
       });
-    // },
-    // popularImages: function(done) {
-    //   ig.media_popular(function(err, medias) {
-    //     done(err, medias);
-    //   });
+      // },
+      // popularImages: function(done) {
+      //   ig.media_popular(function(err, medias) {
+      //     done(err, medias);
+      //   });
     },
     myRecentMedia: function(done) {
       ig.user_self_media_recent(function(err, medias, pagination, limit) {
@@ -407,7 +389,8 @@ exports.getInstagram = function(req, res, next) {
         popularImages: results.popularImages,
         myRecentMedia: results.myRecentMedia
       });
-    } else {
+    }
+    else {
       next(err, results);
     }
   });
@@ -466,14 +449,17 @@ exports.getPayPal = function(req, res, next) {
  */
 exports.getPayPalSuccess = function(req, res) {
   var paymentId = req.session.paymentId;
-  var paymentDetails = { payer_id: req.query.PayerID };
+  var paymentDetails = {
+    payer_id: req.query.PayerID
+  };
   paypal.payment.execute(paymentId, paymentDetails, function(err) {
     if (err) {
       res.render('api/paypal', {
         result: true,
         success: false
       });
-    } else {
+    }
+    else {
       res.render('api/paypal', {
         result: true,
         success: true

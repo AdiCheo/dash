@@ -39,6 +39,31 @@ exports.index = function(req, res, next) {
       apiController.getInstagram(req, res, function(err, results, limit) {
         done(err, results);
       });
+    },
+    // asana: function(done) {
+    //   apiController.getAsana(req, res, function(err, results, limit) {
+    //     done(err, results);
+    //   });
+    // },
+    nyt: function(done) {
+      apiController.getNewYorkTimes(req, res, function(err, results, limit) {
+        done(err, results);
+      });
+    },
+    twitter: function(done) {
+      apiController.getTwitter(req, res, function(err, results, limit) {
+        done(err, results);
+      });
+    },
+    linkedin: function(done) {
+      apiController.getLinkedin(req, res, function(err, results, limit) {
+        done(err, results);
+      });
+    },
+    facebook: function(done) {
+      apiController.getFacebook(req, res, function(err, results, limit) {
+        done(err, results);
+      });
     }
   },
   function(err, results) {
@@ -47,6 +72,16 @@ exports.index = function(req, res, next) {
     }
     res.render('home', {
       title: 'Dashboard',
+      
+      // links: results.asana.getAsanaTasks.links,
+      // dates: results.asana.getAsanaTasks.dates,
+      
+      me: results.facebook.getMe,
+      friends: results.facebook.getMyFriends,
+      
+      profile: results.getLinkedIn,
+      
+      // tweets: results.getTwitter.statuses,
       
       usernames: results.instagram.searchByUsername,
       userById: results.instagram.searchByUserId,
