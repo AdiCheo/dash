@@ -1,12 +1,2 @@
 .col-sm-4
-  .well.well-sm
-    section(data-bind='foreach: widgets')
-      .sub-section.sub-section-height-2(data-bind="css: 'sub-section-height-' + height()")
-        .widget(data-bind='widget: true, css:{fillsize:fillSize}')
-          .tw-display
-            .tw-tr
-              h2.section-title.tw-title.tw-td Current Temperature
-            .tw-tr
-              .tw-value-wrapper.tw-td
-                .tw-value(style='font-size: 75px; max-width: 254px;') -8.77
-                .tw-unit °C
+  iframe(id="forecast_embed" type="text/html" frameborder="0" height="245" width="100%" src="http://forecast.io/embed/#lat=45.4215&lon=-75.6972&name=Ottawa")
