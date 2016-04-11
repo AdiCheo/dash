@@ -428,7 +428,7 @@ exports.getPayPal = function(req, res, next) {
       cancel_url: '/api/paypal/cancel'
     },
     transactions: [{
-      description: 'Hackathon Starter',
+      description: 'Life Dashboard',
       amount: {
         currency: 'USD',
         total: '1.99'
