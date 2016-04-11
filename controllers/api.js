@@ -276,10 +276,14 @@ exports.getNewYorkTimes = function(req, res, next) {
       return next(Error('Missing or Invalid New York Times API Key'));
     }
     var bestsellers = JSON.parse(body);
-    res.render('api/nyt', {
-      title: 'New York Times API',
-      books: bestsellers.results
-    });
+    if (req.path == "/api/nyt") {
+      res.render('api/nyt', {
+        title: 'New York Times API',
+        books: bestsellers.results
+      });
+    } else {
+      next(err, bestsellers.results);
+    }
   });
 };
 
@@ -395,13 +399,17 @@ exports.getInstagram = function(req, res, next) {
     if (err) {
       return next(err);
     }
-    res.render('api/instagram', {
-      title: 'Instagram API',
-      usernames: results.searchByUsername,
-      userById: results.searchByUserId,
-      popularImages: results.popularImages,
-      myRecentMedia: results.myRecentMedia
-    });
+    if (req.path == "/api/instagram") {
+      res.render('api/instagram', {
+        title: 'Instagram API',
+        usernames: results.searchByUsername,
+        userById: results.searchByUserId,
+        popularImages: results.popularImages,
+        myRecentMedia: results.myRecentMedia
+      });
+    } else {
+      next(err, results);
+    }
   });
 };
 
