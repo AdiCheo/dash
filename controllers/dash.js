@@ -169,7 +169,7 @@ exports.index = function(req, res, next) {
     if (err) {
       return next(err);
     }
-    res.render('dash', {
+    res.render('partials/dash', {
       title: 'Dashboard',
       // data: data
       links: results.getAsanaTasks.links,

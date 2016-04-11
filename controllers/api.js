@@ -7,6 +7,7 @@ var graph;
 var LastFmNode;
 var tumblr;
 var foursquare;
+var Asana;
 var Github;
 var Twit;
 var stripe;
@@ -19,7 +20,6 @@ var lob;
 var ig;
 var Y;
 var request;
-var Asana;
 
 var _ = require('lodash');
 var async = require('async');
@@ -79,71 +79,13 @@ exports.getFoursquare = function(req, res, next) {
   });
 };
 
-/**
- * GET /api/tumblr
- * Tumblr API example.
- */
-exports.getTumblr = function(req, res, next) {
-  tumblr = require('tumblr.js');
-
-  var token = _.find(req.user.tokens, { kind: 'tumblr' });
-  var client = tumblr.createClient({
-    consumer_key: process.env.TUMBLR_KEY,
-    consumer_secret: process.env.TUMBLR_SECRET,
-    token: token.accessToken,
-    token_secret: token.tokenSecret
-  });
-  client.posts('mmosdotcom.tumblr.com', { type: 'photo' }, function(err, data) {
-    if (err) {
-      return next(err);
-    }
-    res.render('api/tumblr', {
-      title: 'Tumblr API',
-      blog: data.blog,
-      photoset: data.posts[0].photos
-    });
-  });
-};
-
-/**
- * GET /api/facebook
- * Facebook API example.
- */
-exports.getFacebook = function(req, res, next) {
-  graph = require('fbgraph');
-
-  var token = _.find(req.user.tokens, { kind: 'facebook' });
-  graph.setAccessToken(token.accessToken);
-  async.parallel({
-    getMe: function(done) {
-      graph.get(req.user.facebook + "?fields=id,name,email,first_name,last_name,gender,link,locale,timezone", function(err, me) {
-        done(err, me);
-      });
-    },
-    getMyFriends: function(done) {
-      graph.get(req.user.facebook + '/friends', function(err, friends) {
-        done(err, friends.data);
-      });
-    }
-  },
-  function(err, results) {
-    if (err) {
-      return next(err);
-    }
-    res.render('api/facebook', {
-      title: 'Facebook API',
-      me: results.getMe,
-      friends: results.getMyFriends
-    });
-  });
-};
 
 /**
  * GET /api/asana
  * Web asana example using Cheerio library.
  */
 exports.getAsana = function(req, res, next) {
-  var Asana = require('asana');
+  Asana = require('asana');
   
   var clientId = process.env['ASANA_ID'];
   var clientSecret = process.env['ASANA_SECRET'];
@@ -288,6 +230,66 @@ exports.getAsana = function(req, res, next) {
 };
 
 /**
+ * GET /api/tumblr
+ * Tumblr API example.
+ */
+exports.getTumblr = function(req, res, next) {
+  tumblr = require('tumblr.js');
+
+  var token = _.find(req.user.tokens, { kind: 'tumblr' });
+  var client = tumblr.createClient({
+    consumer_key: process.env.TUMBLR_KEY,
+    consumer_secret: process.env.TUMBLR_SECRET,
+    token: token.accessToken,
+    token_secret: token.tokenSecret
+  });
+  client.posts('mmosdotcom.tumblr.com', { type: 'photo' }, function(err, data) {
+    if (err) {
+      return next(err);
+    }
+    res.render('api/tumblr', {
+      title: 'Tumblr API',
+      blog: data.blog,
+      photoset: data.posts[0].photos
+    });
+  });
+};
+
+/**
+ * GET /api/facebook
+ * Facebook API example.
+ */
+exports.getFacebook = function(req, res, next) {
+  graph = require('fbgraph');
+
+  var token = _.find(req.user.tokens, { kind: 'facebook' });
+  graph.setAccessToken(token.accessToken);
+  async.parallel({
+    getMe: function(done) {
+      graph.get(req.user.facebook + "?fields=id,name,email,first_name,last_name,gender,link,locale,timezone", function(err, me) {
+        done(err, me);
+      });
+    },
+    getMyFriends: function(done) {
+      graph.get(req.user.facebook + '/friends', function(err, friends) {
+        done(err, friends.data);
+      });
+    }
+  },
+  function(err, results) {
+    if (err) {
+      return next(err);
+    }
+    res.render('api/facebook', {
+      title: 'Facebook API',
+      me: results.getMe,
+      friends: results.getMyFriends
+    });
+  });
+};
+
+
+/**
  * GET /api/scraping
  * Web scraping example using Cheerio library.
  */
@@ -352,7 +354,7 @@ exports.getNewYorkTimes = function(req, res, next) {
 
   var query = querystring.stringify({
     'api-key': process.env.NYT_KEY,
-    'list-name': 'young-adult'
+    'list-name': 'science'
   });
   var url = 'http://api.nytimes.com/svc/books/v2/lists?' + query;
 
