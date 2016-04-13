@@ -3,13 +3,11 @@ footer
     .navbar.navbar-default.navbar-fixed-bottom
       .container
         .navbar-header
-          button.navbar-toggle(type='button', data-toggle='collapse', data-target='.navbar-collapse')
+          button.navbar-toggle(type='button', data-toggle='collapse', data-target='.navbar-collapse-bottom')
             span.sr-only Toggle navigation
             span.icon-bar
             span.icon-bar
             span.icon-bar
-          a.navbar-brand(href='/')
-            | Menu
         .collapse.navbar-collapse
           ul.nav.navbar-nav
             li.dropdown(class=title=='Connect Apps'?'active':undefined)
@@ -32,6 +30,13 @@ footer
                   a(href='/api/paypal') PayPal
                 li
                   a(href='/api/github') GitHub
+          ul.nav.navbar-nav.navbar-right
+            li
+              p © 2016 Adrian Cheoreanu. All Rights Reserved
+            li
+              a(href='https://github.com/adicheo/dash') GitHub Project
+            li
+              a(href='https://github.com/adicheo/dash/issues') Issues
   else
     .container.text-center
       p.pull-left © 2016 DeDoDi, Inc. All Rights Reserved
