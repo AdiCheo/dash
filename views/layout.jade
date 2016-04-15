@@ -7,7 +7,35 @@ html
     meta(name='csrf-token', content=_csrf)
     title #{title} - Life Dashboard
     link(rel='stylesheet', href='/css/main.css')
+    
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/react/15.0.1/react.js")
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/react/15.0.1/react-dom.js")
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js")
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js")
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.5/marked.min.js")
+ 
   body
+  
+    #example
+    #example1
+    script(type='text/babel').
+      ReactDOM.render(
+      <h1>Hello, world!</h1>,
+      document.getElementById('example')
+      );
+      var CommentBox = React.createClass({
+        render: function() {
+          return (
+            <div className="commentBox">
+              Hello, world! I am a CommentBox.
+            </div>
+          );
+        }
+      });
+      ReactDOM.render(
+        <CommentBox />,
+        document.getElementById('example1')
+      );
     include partials/header
 
     .container
@@ -19,6 +47,7 @@ html
     script(src='/js/lib/jquery.min.js')
     script(src='/js/lib/bootstrap.min.js')
     script(src='/js/main.js')
+  
 
     // Google Analytics: change UA-XXXXX-X to be your site's ID
     script.
